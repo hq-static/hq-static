@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>后台管理系统</title>
+    <link rel="stylesheet" type="text/css" href="../../common/css/common.css">
+    <link rel="stylesheet" type="text/css" href="../home/home.css">
+
+    <script src="../../common/js/echarts.min.js"></script>
+</head>
+<body>
+<div class="loading" id="loading">
+    <div class="spinner">
+        <div class="double-bounce1"></div>
+        <div class="double-bounce2"></div>
+    </div>
+</div>
+<div id="tips"></div>
+<div class="page">
+    <div id="main" style="width: 1200px;height:400px; margin:0px auto"></div>
+    <br>
+    <div id="keytop" style="width: 700px;height:400px;"></div>
+    <div id="timetop" style="width: 700px;height:400px;"></div>
+    <script type="text/javascript">
+        window.onload=function(){
+            statByTime();
+            statByKeywords();
+        }
+        function setValue() {
+            var data = ['00:00', '00:01', '00:02', '00:03', '00:04', '00:05', '00:06', '00:07', '00:08', '00:09'];
+            var values = [533, 204, 366, 104, 1070, 2048, 336, 578, 962, 483, 1033];
+            setChart(data,values);
+            setChartKT(data,values);
+        }
+
+        function statByKeywords() {
+            $.ajax({
+                url: "http://localhost:8080/stat/bykeywords",
+                dataType: 'json',
+                beforeSend: function (request) {
+                    token = localStorage.getItem("token");
+                    request.setRequestHeader("Authorization", token);
+                },
+                success: function(data) {
+                    setChartKT(data.axis,data.data);
+                }
+            });
+        }
+
+        function statByTime() {
+            $.ajax({
+                url: "http://localhost:8080/stat/bytime",
+                dataType: 'json',
+                beforeSend: function (request) {
+                    token = localStorage.getItem("token");
+                    request.setRequestHeader("Authorization", token);
+                },
+                success: function(data) {
+                    setChart(data.axis,data.data);
+                }
+            });
+        }
+
+        function setChartKT(yAxis,values) {
+            var myChart = echarts.init(document.getElementById('keytop'));
+
+            // 指定图表的配置项和数据
+            var option = {
+                title: {
+                    text: '查询关键字top10统计',
+                    left: 'center'
+                },
+                tooltip: {},
+                legend: {},
+                xAxis: {
+                    type: 'value',
+                    name: '数量 ',
+                    boundaryGap: [0,0.01]
+                },
+                yAxis: {
+                    type: 'category',
+                    name: '关键词',
+                    data: yAxis
+                },
+                series: [
+                    {
+                        type: 'bar',
+                        label: {
+                            show: true,
+                            position: 'right',
+                            textStyle: {
+                                color: 'red',
+                                fontSize: 16
+                            }
+                        },
+                        data: values
+                    }
+                ]
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+
+        }
+
+        function setChart(xAxis,values) {
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('main'));
+
+            // 指定图表的配置项和数据
+            var option = {
+                title: {
+                    text: '用户访问时间段统计',
+                    left: 'center'
+                },
+                tooltip: {},
+                legend: {
+                    data: ['销量']
+                },
+                xAxis: {
+                    type: 'category',
+                    name: '访问时间',
+                    data: xAxis
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '访问数量'
+                },
+                series: [
+                    {
+                        type: 'line',
+                        name: '访问时间',
+                        label: {
+                            show: true,
+                            position: 'bottom',
+                            textStyle: {
+                                color: 'red',
+                                fontSize: 16
+                            }
+                        },
+                        data: values
+                    }
+                ]
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+        }
+    </script>
+</div>
+
+<script src="../../common/js/base.min.js"></script>
+<script type="text/javascript" src="../../common/js/sea.js"></script>
+<script type="text/javascript" src="../../common/js/utils.js"></script>
+<script type="text/javascript" src="../../common/js/common.js"></script>
+<script type="text/javascript" src="../../common/js/jquery-treetable/jquery.treetable.js"></script>
+<script seajs type="text/javascript" src="../home/home.js"></script>
+</body>
+</html>
