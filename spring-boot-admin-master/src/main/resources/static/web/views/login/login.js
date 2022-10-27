@@ -18,7 +18,6 @@ define(function (require, exports, module) {
             this.model = new Backbone.Model();
             this.handlerKeyup();
             this.getCaptcha();
-            this.checkCaptcha();
         },
 
         checkCaptcha:function (){
